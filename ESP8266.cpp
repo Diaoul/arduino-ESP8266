@@ -636,7 +636,7 @@ int ESP8266::read()
     return -1;
 }
 
-int ESP8266::read(uint8_t* buf, size_t size)
+int ESP8266::read(char* buf, size_t size)
 {
     int readable;
 
