@@ -718,7 +718,8 @@ int ESP8266::timedPeek(unsigned int timeout)
 
         if (c >= 0) {
             if (millis() - startMillis > 20) {
-            return c;
+                return c;
+            }
         }
     } while(millis() - startMillis < timeout);
 
