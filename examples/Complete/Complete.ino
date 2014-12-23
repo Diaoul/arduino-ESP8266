@@ -235,7 +235,7 @@ void loop()
     /*unsigned int id;
     int length;
     int totalRead;
-    byte buffer[11] = {};
+    char buffer[11] = {};
 
     if ((length = wifi.available()) > 0) {
       id = wifi.getId();
