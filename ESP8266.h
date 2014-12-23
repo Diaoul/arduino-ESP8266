@@ -191,7 +191,7 @@ public:
 
     // Read
     int read();
-    int read(uint8_t* buf, size_t size);
+    int read(char *buffer, size_t length);
 
 protected:
     Stream* _serial;

@@ -636,15 +636,15 @@ int ESP8266::read()
     return -1;
 }
 
-int ESP8266::read(uint8_t* buf, size_t size)
+int ESP8266::read(char *buffer, size_t length)
 {
     int readable;
 
     if (available() > 0) {
-        readable = min(size, _available);
+        readable = min(length, _available);
         _available -= readable;
         _serial->setTimeout(_timeout);
-        return _serial->readBytes(buf, readable);
+        return _serial->readBytes(buffer, readable);
     }
 
     return -1;
@@ -718,7 +718,8 @@ int ESP8266::timedPeek(unsigned int timeout)
 
         if (c >= 0) {
             if (millis() - startMillis > 20) {
-            return c;
+                return c;
+            }
         }
     } while(millis() - startMillis < timeout);
 
