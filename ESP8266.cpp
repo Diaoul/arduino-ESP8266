@@ -107,7 +107,7 @@ ESP8266CommandStatus ESP8266::joinAP(char* ssid, char* password)
     _serial->print(password);
     _serial->println(F("\""));
 
-    return readStatus(10000);
+    return readStatus(16000);
 }
 
 ESP8266CommandStatus ESP8266::getAP(char* ssid)
@@ -790,9 +790,9 @@ void ESP8266::parseMACAddress(byte* mac, unsigned int timeout)
 
 ESP8266CommandStatus ESP8266::readStatus(unsigned int timeout)
 {
-    const char* statuses[] = {"OK", "no change", "ERROR", "link is not", "too long"};
+    const char* statuses[] = {"OK", "no change", "ERROR", "link is not", "too long", "FAIL"};
 
-    return (ESP8266CommandStatus)findStrings(statuses, 5, false, timeout);
+    return (ESP8266CommandStatus)findStrings(statuses, 6, false, timeout);
 }
 
 bool ESP8266::find(const __FlashStringHelper* target)

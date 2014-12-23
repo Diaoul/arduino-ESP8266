@@ -293,6 +293,10 @@ String getStatus(ESP8266CommandStatus status)
         return "TOO LONG";
         break;
 
+    case ESP8266_COMMAND_FAIL:
+        return "FAIL";
+        break;
+
     default:
         return "UNKNOWN COMMAND STATUS";
         break;
