@@ -4,6 +4,9 @@
 #include <Arduino.h>
 #include <IPAddress.h>
 
+//#define ESP8266_DEBUG
+
+#define ESP8266_MAX_CONNECTIONS 5
 #define ESP8266_SINGLE_CLIENT 5
 
 enum ESP8266WifiMode {
@@ -47,16 +50,11 @@ enum ESP8266CommandStatus {
     ESP8266_COMMAND_FAIL
 };
 
-enum ESP8266ServerMode {
-    ESP8266_SERVER_DELETE = 0,
-    ESP8266_SERVER_CREATE
-};
-
 struct ESP8266Connection {
-    uint8_t id;
+    unsigned int id;
     ESP8266Protocol protocol;
     IPAddress ip;
-    uint16_t port;
+    unsigned int port;
     ESP8266Role role;
 };
 
@@ -76,7 +74,7 @@ public:
     }
 
     // Set the underlying serial and prepare the module
-    bool begin(Stream &serial);
+    bool begin(Stream& serial);
 
     // Set timeout
     void setTimeout(unsigned long timeout);
@@ -102,11 +100,11 @@ public:
     /****************************************/
     /******        WiFi commands       ******/
     /****************************************/
-    // Set WiFi mode
-    ESP8266CommandStatus setWifiMode(ESP8266WifiMode mode);
+    // Set mode
+    ESP8266CommandStatus setMode(ESP8266WifiMode mode);
 
-    // Get the WiFi mode
-    ESP8266CommandStatus getWifiMode(ESP8266WifiMode* mode);
+    // Get the mode
+    ESP8266CommandStatus getMode(ESP8266WifiMode* mode);
 
     // Join the access point
     ESP8266CommandStatus joinAP(char* ssid, char* password);
@@ -160,10 +158,10 @@ public:
     ESP8266CommandStatus connect(unsigned int id, ESP8266Protocol protocol, IPAddress ip, unsigned int port);
 
     // Send data
-    ESP8266CommandStatus send(char* data);
-    ESP8266CommandStatus send(char* data, unsigned int length);
-    ESP8266CommandStatus send(unsigned int id, char* data);
-    ESP8266CommandStatus send(unsigned int id, char* data, unsigned int length);
+    ESP8266CommandStatus send(const char* data);
+    ESP8266CommandStatus send(const uint8_t* buffer, size_t size);
+    ESP8266CommandStatus send(unsigned int id, const char* data);
+    ESP8266CommandStatus send(unsigned int id, const uint8_t* buffer, size_t size);
 
     // Close connection
     ESP8266CommandStatus close();
@@ -175,8 +173,12 @@ public:
     // Get multiple connections
     ESP8266CommandStatus getMultipleConnections(bool& enable);
 
-    // Configure server
-    ESP8266CommandStatus configureServer(ESP8266ServerMode mode, unsigned int port);
+    // Create server
+    ESP8266CommandStatus createServer();
+    ESP8266CommandStatus createServer(unsigned int port);
+
+    // Delete server
+    ESP8266CommandStatus deleteServer();
 
     // Set server timeout
     ESP8266CommandStatus setServerTimeout(unsigned int timeout);
@@ -192,7 +194,14 @@ public:
 
     // Read
     int read();
-    int read(char *buffer, size_t length);
+    int read(char* buffer, size_t size);
+    int read(uint8_t* buffer, size_t size);
+
+    // Peek
+    int peek();
+
+    // Flush
+    void flush();
 
 protected:
     Stream* _serial;
@@ -214,6 +223,10 @@ protected:
 
     // Set transmission mode
     ESP8266CommandStatus setUnvarnishedMode(bool enable);
+
+    // Configure server
+    ESP8266CommandStatus configureServer(int mode);
+    ESP8266CommandStatus configureServer(int mode, unsigned int port);
 
     // Read the underlying serial, waiting for timeout milliseconds. Returns the read char or -1 if timeout
     int timedRead(unsigned int timeout);

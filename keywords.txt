@@ -11,8 +11,8 @@ restart                            	KEYWORD2
 getVersion                         	KEYWORD2
 deepSleep                          	KEYWORD2
 setBaudrate                        	KEYWORD2
-setWifiMode                        	KEYWORD2
-getWifiMode                        	KEYWORD2
+setMode                            	KEYWORD2
+getMode                            	KEYWORD2
 joinAP                             	KEYWORD2
 getAP                              	KEYWORD2
 listAP                             	KEYWORD2
@@ -31,12 +31,15 @@ send                               	KEYWORD2
 close                              	KEYWORD2
 setMultipleConnections             	KEYWORD2
 getMultipleConnections             	KEYWORD2
-configureServer                    	KEYWORD2
+createServer                       	KEYWORD2
+deleteServer                       	KEYWORD2
 setServerTimeout                   	KEYWORD2
 getServerTimeout                   	KEYWORD2
 available                          	KEYWORD2
 getId                              	KEYWORD2
 read                               	KEYWORD2
+peek                               	KEYWORD2
+flush                              	KEYWORD2
 
 # Enum
 ESP8266_WIFI_STATION               	LITERAL1
@@ -62,5 +65,3 @@ ESP8266_COMMAND_ERROR              	LITERAL1
 ESP8266_COMMAND_NO_LINK            	LITERAL1
 ESP8266_COMMAND_TOO_LONG           	LITERAL1
 ESP8266_COMMAND_FAIL               	LITERAL1
-ESP8266_SERVER_DELETE              	LITERAL1
-ESP8266_SERVER_CREATE              	LITERAL1

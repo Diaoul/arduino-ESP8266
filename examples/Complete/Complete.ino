@@ -164,9 +164,13 @@ void setup()
     Serial.print(" : ");
     Serial.println(multipleConnections);*/
 
-    // configureServer
-    Serial.print("configureServer: ");
-    Serial.println(getStatus(wifi.configureServer(ESP8266_SERVER_CREATE, 4000)));
+    // createServer
+    Serial.print("createServer: ");
+    Serial.println(getStatus(wifi.createServer(4000)));
+
+    // deleteServer
+    Serial.print("deleteServer: ");
+    Serial.println(getStatus(wifi.deleteServer()));
 
     // setServerTimeout
     /*Serial.print("setServerTimeout: ");
