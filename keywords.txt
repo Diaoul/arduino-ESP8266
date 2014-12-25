@@ -2,6 +2,7 @@
 ESP8266                            	KEYWORD1
 ESP8266Connection                  	KEYWORD1
 ESP8266Station                     	KEYWORD1
+ESP8266Client                      	KEYWORD1
 
 # Method
 begin                              	KEYWORD2
@@ -40,6 +41,15 @@ getId                              	KEYWORD2
 read                               	KEYWORD2
 peek                               	KEYWORD2
 flush                              	KEYWORD2
+begin                              	KEYWORD2
+connect                            	KEYWORD2
+available                          	KEYWORD2
+read                               	KEYWORD2
+write                              	KEYWORD2
+peek                               	KEYWORD2
+flush                              	KEYWORD2
+stop                               	KEYWORD2
+connected                          	KEYWORD2
 
 # Enum
 ESP8266_WIFI_STATION               	LITERAL1
