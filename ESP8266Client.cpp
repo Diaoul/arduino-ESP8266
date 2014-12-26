@@ -2,54 +2,54 @@
 
 bool ESP8266Client::begin(ESP8266& esp8266)
 {
+    return begin(esp8266, 0);
+}
+
+bool ESP8266Client::begin(ESP8266& esp8266, unsigned int id)
+{
+    _id = id;
+
     _esp8266 = &esp8266;
 
-    if (_esp8266->getMultipleConnections(_multipleConnections) != ESP8266_COMMAND_OK)
+    if (_esp8266->setMultipleConnections(true) != ESP8266_COMMAND_OK)
         return false;
 
     return true;
 }
 
-int ESP8266Client::connect(const char* host, uint16_t port) {
-    //TODO
+int ESP8266Client::connect(const char* host, uint16_t port)
+{
+    ESP8266CommandStatus status = _esp8266->connect(_id, ESP8266_PROTOCOL_TCP, host, port);
+
+    if (status == ESP8266_COMMAND_OK || status == ESP8266_COMMAND_ALREADY_CONNECTED)
+        return 1;
+
     return 0;
 }
 
 int ESP8266Client::connect(IPAddress ip, uint16_t port)
 {
-    if (_multipleConnections) {
-        for (uint8_t i = 0; i < ESP8266_MAX_CONNECTIONS; i++) {
-            if (_esp8266->connect(ESP8266_PROTOCOL_TCP, ip, port) == ESP8266_COMMAND_OK) {
-                _id = i;
-                break;
-            }
+    ESP8266CommandStatus status = _esp8266->connect(_id, ESP8266_PROTOCOL_TCP, ip, port);
 
-            if (i == ESP8266_MAX_CONNECTIONS - 1)
-                return 0;
-        }
-    } else {
-        if (_esp8266->connect(ESP8266_PROTOCOL_TCP, ip, port) != ESP8266_COMMAND_OK)
-            return 0;
+    if (status == ESP8266_COMMAND_OK || status == ESP8266_COMMAND_ALREADY_CONNECTED)
+        return 1;
 
-        _id = ESP8266_SINGLE_CLIENT;
-    }
-
-    _ip = ip;
-    _port = port;
-
-    return 1;
+    return 0;
 }
 
-int ESP8266Client::available() {
+int ESP8266Client::available()
+{
     return _esp8266->available();
 }
 
 
-int ESP8266Client::read() {
+int ESP8266Client::read()
+{
     return _esp8266->read();
 }
 
-int ESP8266Client::read(uint8_t* buffer, size_t size) {
+int ESP8266Client::read(uint8_t* buffer, size_t size)
+{
     return _esp8266->read(buffer, size);
 }
 
@@ -59,6 +59,14 @@ size_t ESP8266Client::write(uint8_t b)
         return 0;
 
     return 1;
+}
+
+size_t ESP8266Client::write(const char* data)
+{
+    if (_esp8266->send(_id, data) != ESP8266_COMMAND_OK)
+        return 0;
+
+    return strlen(data);
 }
 
 size_t ESP8266Client::write(const uint8_t* buffer, size_t size)
@@ -94,7 +102,7 @@ uint8_t ESP8266Client::connected()
         return 0;
 
     for (unsigned int i = 0; i < count; i++) {
-        if (connections[i].protocol == ESP8266_PROTOCOL_TCP && connections[i].ip == _ip && connections[i].port == _port && connections[i].role == ESP8266_ROLE_CLIENT)
+        if (connections[i].id == _id)
             return 1;
     }
 
