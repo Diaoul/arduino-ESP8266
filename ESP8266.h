@@ -47,7 +47,8 @@ enum ESP8266CommandStatus {
     ESP8266_COMMAND_ERROR,
     ESP8266_COMMAND_NO_LINK,
     ESP8266_COMMAND_TOO_LONG,
-    ESP8266_COMMAND_FAIL
+    ESP8266_COMMAND_FAIL,
+    ESP8266_COMMAND_ALREADY_CONNECTED
 };
 
 struct ESP8266Connection {
@@ -155,7 +156,9 @@ public:
 
     // Establish connection
     ESP8266CommandStatus connect(ESP8266Protocol protocol, IPAddress ip, unsigned int port);
+    ESP8266CommandStatus connect(ESP8266Protocol protocol, const char* host, unsigned int port);
     ESP8266CommandStatus connect(unsigned int id, ESP8266Protocol protocol, IPAddress ip, unsigned int port);
+    ESP8266CommandStatus connect(unsigned int id, ESP8266Protocol protocol, const char* host, unsigned int port);
 
     // Send data
     ESP8266CommandStatus send(const char* data);
@@ -164,7 +167,6 @@ public:
     ESP8266CommandStatus send(unsigned int id, const uint8_t* buffer, size_t size);
 
     // Close connection
-    ESP8266CommandStatus close();
     ESP8266CommandStatus close(unsigned int id);
 
     // Set multiple connections
@@ -227,6 +229,10 @@ protected:
     // Configure server
     ESP8266CommandStatus configureServer(int mode);
     ESP8266CommandStatus configureServer(int mode, unsigned int port);
+
+    // Connect
+    void pre_connect(unsigned int id, ESP8266Protocol protocol);
+    ESP8266CommandStatus post_connect(unsigned int port);
 
     // Read the underlying serial, waiting for timeout milliseconds. Returns the read char or -1 if timeout
     int timedRead(unsigned int timeout);

@@ -352,7 +352,6 @@ ESP8266CommandStatus ESP8266::getIP(ESP8266WifiMode mode, IPAddress& ip)
     return readStatus(20);
 }
 
-
 /****************************************/
 /******       TCP/IP commands      ******/
 /****************************************/
@@ -410,7 +409,6 @@ ESP8266CommandStatus ESP8266::getConnectionStatus(ESP8266ConnectionStatus& statu
 
         count++;
     }
-
 }
 
 ESP8266CommandStatus ESP8266::connect(ESP8266Protocol protocol, IPAddress ip, unsigned int port)
@@ -418,36 +416,23 @@ ESP8266CommandStatus ESP8266::connect(ESP8266Protocol protocol, IPAddress ip, un
     return connect(ESP8266_SINGLE_CLIENT, protocol, ip, port);
 }
 
+ESP8266CommandStatus ESP8266::connect(ESP8266Protocol protocol, const char* host, unsigned int port)
+{
+    return connect(ESP8266_SINGLE_CLIENT, protocol, host, port);
+}
+
 ESP8266CommandStatus ESP8266::connect(unsigned int id, ESP8266Protocol protocol, IPAddress ip, unsigned int port)
 {
-    int c;
-
-    clear();
-    _serial->print(F("AT+CIPSTART="));
-
-    if (id != ESP8266_SINGLE_CLIENT) {
-        _serial->print(id);
-        _serial->print(F(","));
-    }
-
-    _serial->print(F("\""));
-
-    switch (protocol) {
-    case ESP8266_PROTOCOL_TCP:
-        _serial->print(F("TCP"));
-        break;
-
-    case ESP8266_PROTOCOL_UDP:
-        _serial->print(F("UDP"));
-        break;
-    }
-
-    _serial->print(F("\",\""));
+    pre_connect(id, protocol);
     _serial->print(ip);
-    _serial->print(F("\","));
-    _serial->println(port);
+    return post_connect(port);
+}
 
-    return readStatus(10000);
+ESP8266CommandStatus ESP8266::connect(unsigned int id, ESP8266Protocol protocol, const char* host, unsigned int port)
+{
+    pre_connect(id, protocol);
+    _serial->print(host);
+    return post_connect(port);
 }
 
 ESP8266CommandStatus ESP8266::send(const char* data)
@@ -492,22 +477,12 @@ ESP8266CommandStatus ESP8266::send(unsigned int id, const uint8_t* buffer, size_
     return readStatus(_timeout);
 }
 
-ESP8266CommandStatus ESP8266::close()
-{
-    return close(ESP8266_SINGLE_CLIENT);
-}
-
 ESP8266CommandStatus ESP8266::close(unsigned int id)
 {
     clear();
     _serial->print(F("AT+CIPCLOSE"));
-
-    if (id != ESP8266_SINGLE_CLIENT) {
-        _serial->print(F("="));
-        _serial->print(id);
-    }
-
-    _serial->println();
+    _serial->print(F("="));
+    _serial->println(id);
 
     return readStatus(500);
 }
@@ -678,7 +653,8 @@ int ESP8266::peek()
     return -1;
 }
 
-void ESP8266::flush() {
+void ESP8266::flush()
+{
     _serial->flush();
 }
 
@@ -751,7 +727,7 @@ int ESP8266::timedRead(unsigned int timeout)
 #ifdef ESP8266_DEBUG
 
             if (millis() - startMillis > 20) {
-                Serial.print(F("Read: "));
+                Serial.print(F("==> Read: "));
                 Serial.print(millis() - startMillis);
                 Serial.println(F("ms"));
             }
@@ -762,6 +738,41 @@ int ESP8266::timedRead(unsigned int timeout)
     } while(millis() - startMillis < timeout);
 
     return -1;
+}
+
+void ESP8266::pre_connect(unsigned int id, ESP8266Protocol protocol)
+{
+    int c;
+
+    clear();
+    _serial->print(F("AT+CIPSTART="));
+
+    if (id != ESP8266_SINGLE_CLIENT) {
+        _serial->print(id);
+        _serial->print(F(","));
+    }
+
+    _serial->print(F("\""));
+
+    switch (protocol) {
+    case ESP8266_PROTOCOL_TCP:
+        _serial->print(F("TCP"));
+        break;
+
+    case ESP8266_PROTOCOL_UDP:
+        _serial->print(F("UDP"));
+        break;
+    }
+
+    _serial->print(F("\",\""));
+}
+
+ESP8266CommandStatus ESP8266::post_connect(unsigned int port)
+{
+    _serial->print(F("\","));
+    _serial->println(port);
+
+    return readStatus(10000);
 }
 
 int ESP8266::timedPeek(unsigned int timeout)
@@ -777,7 +788,7 @@ int ESP8266::timedPeek(unsigned int timeout)
 #ifdef ESP8266_DEBUG
 
             if (millis() - startMillis > 20) {
-                Serial.print(F("Peek: "));
+                Serial.print(F("==> Peek: "));
                 Serial.print(millis() - startMillis);
                 Serial.println(F("ms"));
             }
@@ -854,9 +865,9 @@ void ESP8266::parseMACAddress(byte* mac, unsigned int timeout)
 
 ESP8266CommandStatus ESP8266::readStatus(unsigned int timeout)
 {
-    const char* statuses[] = {"OK", "no change", "ERROR", "link is not", "too long", "FAIL"};
+    const char* statuses[] = {"OK\r\n", "no change\r\n", "ERROR\r\n", "link is not\r\n", "too long\r\n", "FAIL\r\n", "ALREAY CONNECT\r\n"};
 
-    return (ESP8266CommandStatus)findStrings(statuses, 6, false, timeout);
+    return (ESP8266CommandStatus)findStrings(statuses, 7, false, timeout);
 }
 
 bool ESP8266::find(const __FlashStringHelper* target)
@@ -872,6 +883,10 @@ bool ESP8266::find(const __FlashStringHelper* target, unsigned int timeout)
 
     // read until timeout
     while ((c = timedRead(timeout)) > 0) {
+#ifdef ESP8266_DEBUG
+        Serial.write(c);
+#endif
+
         // match magic
         if(c == pgm_read_byte(p + index)) {
             if (pgm_read_byte(p + ++index) == 0)
