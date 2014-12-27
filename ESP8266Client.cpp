@@ -2,13 +2,6 @@
 
 bool ESP8266Client::begin(ESP8266& esp8266)
 {
-    return begin(esp8266, 0);
-}
-
-bool ESP8266Client::begin(ESP8266& esp8266, unsigned int id)
-{
-    _id = id;
-
     _esp8266 = &esp8266;
 
     if (_esp8266->setMultipleConnections(true) != ESP8266_COMMAND_OK)
@@ -17,12 +10,21 @@ bool ESP8266Client::begin(ESP8266& esp8266, unsigned int id)
     return true;
 }
 
+bool ESP8266Client::begin(ESP8266& esp8266, unsigned int id)
+{
+    _id = id;
+
+    return begin(esp8266);
+}
+
 int ESP8266Client::connect(const char* host, uint16_t port)
 {
     ESP8266CommandStatus status = _esp8266->connect(_id, ESP8266_PROTOCOL_TCP, host, port);
 
-    if (status == ESP8266_COMMAND_OK || status == ESP8266_COMMAND_ALREADY_CONNECTED)
+    if (status == ESP8266_COMMAND_OK || status == ESP8266_COMMAND_ALREADY_CONNECTED) {
+        _connected = true;
         return 1;
+    }
 
     return 0;
 }
@@ -31,8 +33,10 @@ int ESP8266Client::connect(IPAddress ip, uint16_t port)
 {
     ESP8266CommandStatus status = _esp8266->connect(_id, ESP8266_PROTOCOL_TCP, ip, port);
 
-    if (status == ESP8266_COMMAND_OK || status == ESP8266_COMMAND_ALREADY_CONNECTED)
+    if (status == ESP8266_COMMAND_OK || status == ESP8266_COMMAND_ALREADY_CONNECTED) {
+        _connected = true;
         return 1;
+    }
 
     return 0;
 }
@@ -90,6 +94,7 @@ void ESP8266Client::flush()
 void ESP8266Client::stop()
 {
     _esp8266->close(_id);
+    _connected = false;
 }
 
 uint8_t ESP8266Client::connected()
@@ -98,12 +103,23 @@ uint8_t ESP8266Client::connected()
     ESP8266ConnectionStatus status;
     unsigned int count;
 
+    // check _connected flag
+    if (_connected)
+        return 1;
+
+    // assume connected if data is available
+    if (available() > 0)
+        return 1;
+
+    // get connection status
     if (_esp8266->getConnectionStatus(status, connections, count) != ESP8266_COMMAND_OK)
         return 0;
 
     for (unsigned int i = 0; i < count; i++) {
-        if (connections[i].id == _id)
+        if (connections[i].id == _id) {
+            _connected = true;
             return 1;
+        }
     }
 
     return 0;
