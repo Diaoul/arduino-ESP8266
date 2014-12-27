@@ -12,5 +12,7 @@ History
 About
 =====
 Author: Antoine Bertin
+
 License: MIT
+
 Code formated with: ``astyle --break-blocks --remove-brackets``
