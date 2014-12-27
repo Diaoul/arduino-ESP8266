@@ -470,7 +470,7 @@ ESP8266CommandStatus ESP8266::send(unsigned int id, const uint8_t* buffer, size_
         return ESP8266_COMMAND_TIMEOUT;
 
     if (c != '>')
-        return ESP8266_COMMAND_INVALID;
+        return readStatus(_timeout);
 
     _serial->write(buffer, size);
 
