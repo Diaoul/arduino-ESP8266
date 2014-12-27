@@ -71,7 +71,7 @@ class ESP8266
 public:
     ESP8266()
     {
-        _timeout=1000;
+        _timeout = 1000;
     }
 
     // Set the underlying serial and prepare the module

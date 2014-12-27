@@ -585,19 +585,19 @@ int ESP8266::available()
 
     // check for timeouts and store _available and _id
     if (c == -1)
-        return _available = -1;
+        _available = -1;
     else if (c == ',') {
         _id = tmp;
         _available = parseInt(20);
 
         // skip ':'
         if (timedRead(20) == -1)
-            return _available = -1;
+            _available = -1;
     } else if (c ==  ':') {
         _id = ESP8266_SINGLE_CLIENT;
         _available = tmp;
     } else
-        return _available = -2;
+        _available = -2;
 
     return _available;
 }
