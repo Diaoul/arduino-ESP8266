@@ -143,7 +143,7 @@ void setup()
     /****************************************/
     // connect
     /*Serial.print("connect: ");
-    Serial.println(getStatus(wifi.connect(ESP8266_PROTOCOL_TCP, IPAddress(192.168.4.100), 4000)));*/
+    Serial.println(getStatus(wifi.connect(ESP8266_PROTOCOL_TCP, IPAddress(192,168,4,100), 4000)));*/
 
     // send
     /*Serial.print("send: ");
