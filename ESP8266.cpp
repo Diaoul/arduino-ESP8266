@@ -882,7 +882,8 @@ bool ESP8266::find(const __FlashStringHelper* target, unsigned int timeout)
     int c;
 
     // read until timeout
-    while ((c = timedRead(timeout)) > 0) {
+    while ((c = timedRead(timeout)) >= 0) {
+
 #ifdef ESP8266_DEBUG
         Serial.write(c);
 #endif
@@ -909,7 +910,7 @@ size_t ESP8266::readUntil(char* buffer, size_t length, const __FlashStringHelper
         p = reinterpret_cast<PGM_P>(target);
 
     // read until timeout
-    while ((c = timedRead(timeout)) > 0) {
+    while ((c = timedRead(timeout)) >= 0) {
         // skip first carriage return and new line characters
         if (bufferIndex == 0 && (c == 13 || c == 10))
             continue;
@@ -944,7 +945,7 @@ int ESP8266::findStrings(const char** strings, unsigned int count, bool strict, 
     int c;
 
     // read until match or timeout
-    while ((c = timedRead(timeout)) > 0) {
+    while ((c = timedRead(timeout)) >= 0) {
         match = false;
 
 #ifdef ESP8266_DEBUG
