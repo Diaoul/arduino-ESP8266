@@ -611,6 +611,9 @@ int ESP8266::read()
 {
     if (available() > 0) {
         _available--;
+
+        while (!_serial->available()) {}
+
         return _serial->read();
     }
 
@@ -647,8 +650,12 @@ int ESP8266::read(uint8_t* buffer, size_t size)
 
 int ESP8266::peek()
 {
-    if (available() > 0)
+    if (available() > 0) {
+
+        while (!_serial->available()) {}
+
         return _serial->peek();
+    }
 
     return -1;
 }
