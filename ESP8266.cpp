@@ -665,6 +665,14 @@ void ESP8266::flush()
     _serial->flush();
 }
 
+size_t ESP8266::write(uint8_t b)
+{
+    if (send(_id, &b, 1) != ESP8266_COMMAND_OK)
+        return 0;
+
+    return 1;
+}
+
 /****************************************/
 /******           Private          ******/
 /****************************************/

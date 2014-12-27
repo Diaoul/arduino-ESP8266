@@ -66,7 +66,7 @@ struct ESP8266Station {
 
 //TODO: ESP8266AccessPoint struct
 
-class ESP8266
+class ESP8266 : public Stream
 {
 public:
     ESP8266()
@@ -204,6 +204,9 @@ public:
 
     // Flush
     void flush();
+    
+    // Write
+    size_t write(uint8_t b);
 
 protected:
     Stream* _serial;
