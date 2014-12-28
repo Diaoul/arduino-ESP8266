@@ -7,11 +7,7 @@
 class ESP8266Client : public Client
 {
 public:
-    ESP8266Client()
-    {
-        _id = 0;
-        _connected = false;
-    }
+    ESP8266Client() : Client(), _id(0), _connected(false)  {}
 
     // Set the underlying ESP8266 and prepare the client
     bool begin(ESP8266& esp8266);
