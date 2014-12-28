@@ -7,11 +7,12 @@
 class ESP8266Client : public Client
 {
 public:
-    ESP8266Client() : Client(), _id(0), _connected(false)  {}
+    ESP8266Client(ESP8266& esp8266) : Client(), _esp8266(&esp8266), _id(0), _connected(false)  {}
 
-    // Set the underlying ESP8266 and prepare the client
-    bool begin(ESP8266& esp8266);
-    bool begin(ESP8266& esp8266, unsigned int id);
+    ESP8266Client(ESP8266& esp8266, unsigned int id) : Client(), _esp8266(&esp8266), _id(id), _connected(false)  {}
+
+    // Prepare the client
+    bool begin();
 
     // Connect
     int connect(const char* host, uint16_t port);

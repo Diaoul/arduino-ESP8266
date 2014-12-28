@@ -3,7 +3,7 @@
 #include "ESP8266.h"
 
 SoftwareSerial esp8266Serial = SoftwareSerial(10, 11);
-ESP8266 wifi = ESP8266();
+ESP8266 wifi = ESP8266(esp8266Serial);
 
 void setup()
 {
@@ -11,7 +11,7 @@ void setup()
 
     // ESP8266
     esp8266Serial.begin(9600);
-    wifi.begin(esp8266Serial);
+    wifi.begin();
     wifi.setTimeout(1000);
 
     /****************************************/

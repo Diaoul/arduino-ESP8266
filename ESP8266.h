@@ -69,10 +69,10 @@ struct ESP8266Station {
 class ESP8266 : public Stream
 {
 public:
-    ESP8266() : Stream() {}
+    ESP8266(Stream& serial) : Stream(), _serial(&serial) {}
 
-    // Set the underlying serial and prepare the module
-    bool begin(Stream& serial);
+    // Prepare the module
+    bool begin();
 
     /****************************************/
     /******       Basic commands       ******/

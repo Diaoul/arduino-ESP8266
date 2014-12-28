@@ -1,20 +1,11 @@
 #include "ESP8266Client.h"
 
-bool ESP8266Client::begin(ESP8266& esp8266)
+bool ESP8266Client::begin()
 {
-    _esp8266 = &esp8266;
-
     if (_esp8266->setMultipleConnections(true) != ESP8266_COMMAND_OK)
         return false;
 
     return true;
-}
-
-bool ESP8266Client::begin(ESP8266& esp8266, unsigned int id)
-{
-    _id = id;
-
-    return begin(esp8266);
 }
 
 int ESP8266Client::connect(const char* host, uint16_t port)

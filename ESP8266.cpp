@@ -1,9 +1,7 @@
 #include "ESP8266.h"
 
-bool ESP8266::begin(Stream& serial)
+bool ESP8266::begin()
 {
-    _serial = &serial;
-
     return initialize();
 }
 
