@@ -7,11 +7,6 @@ bool ESP8266::begin(Stream& serial)
     return initialize();
 }
 
-void ESP8266::setTimeout(unsigned long timeout)
-{
-    _timeout = timeout;
-}
-
 /****************************************/
 /******       Basic commands       ******/
 /****************************************/

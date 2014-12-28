@@ -69,16 +69,10 @@ struct ESP8266Station {
 class ESP8266 : public Stream
 {
 public:
-    ESP8266()
-    {
-        _timeout = 1000;
-    }
+    ESP8266() : Stream() {}
 
     // Set the underlying serial and prepare the module
     bool begin(Stream& serial);
-
-    // Set timeout
-    void setTimeout(unsigned long timeout);
 
     /****************************************/
     /******       Basic commands       ******/
@@ -204,7 +198,7 @@ public:
 
     // Flush
     void flush();
-    
+
     // Write
     size_t write(uint8_t b);
 
