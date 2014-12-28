@@ -45,12 +45,12 @@ void setup()
     /****************************************/
     // setWifiMode
     Serial.print("setWifiMode: ");
-    Serial.println(getStatus(wifi.setWifiMode(ESP8266_WIFI_ACCESSPOINT)));
+    Serial.println(getStatus(wifi.setMode(ESP8266_WIFI_ACCESSPOINT)));
 
     // getWifiMode
     /*ESP8266WifiMode mode;
     Serial.print("getWifiMode: ");
-    Serial.println(getStatus(wifi.getWifiMode(&mode)));*/
+    Serial.println(getStatus(wifi.getMode(&mode)));*/
 
     // joinAP
     /*Serial.print("joinAP: ");

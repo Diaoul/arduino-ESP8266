@@ -1,6 +1,6 @@
 ESP8266
 =======
-An Arduino library to manage the ESP8266.
+An Arduino library to manage the ESP8266. https://github.com/Diaoul/arduino-ESP8266
 
 History
 =======
@@ -12,5 +12,7 @@ History
 About
 =====
 Author: Antoine Bertin
+
 License: MIT
+
 Code formated with: ``astyle --break-blocks --remove-brackets``
