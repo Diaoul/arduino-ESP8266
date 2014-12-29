@@ -205,8 +205,6 @@ public:
 protected:
     Stream* _serial;
 
-    unsigned long _timeout;
-
     int _available;
 
     unsigned int _id;
