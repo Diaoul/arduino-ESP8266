@@ -2,7 +2,7 @@
 
 void ESP8266Server::begin()
 {
-    for (unsigned int i = 0; i < 5; i++){
+    for (unsigned int i = 0; i < ESP8266_MAX_CONNECTIONS; i++){
         _clients[i] = new ESP8266Client(_esp8266, i);
     }
 

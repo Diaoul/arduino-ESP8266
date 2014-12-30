@@ -13,7 +13,7 @@ public:
 
 protected:
     uint16_t _port;
-    ESP8266Client * _clients[5];
+    ESP8266Client * _clients[ESP8266_MAX_CONNECTIONS];
     ESP8266 _esp8266;
 };
 
