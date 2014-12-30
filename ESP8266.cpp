@@ -428,48 +428,6 @@ ESP8266CommandStatus ESP8266::connect(unsigned int id, ESP8266Protocol protocol,
     return post_connect(port);
 }
 
-ESP8266CommandStatus ESP8266::send(const char* data)
-{
-    return send(ESP8266_SINGLE_CLIENT, (uint8_t*)data, strlen(data));
-}
-
-ESP8266CommandStatus ESP8266::send(const uint8_t* buffer, size_t size)
-{
-    return send(ESP8266_SINGLE_CLIENT, buffer, size);
-}
-
-ESP8266CommandStatus ESP8266::send(unsigned int id, const char* data)
-{
-    return send(id, (uint8_t*)data, strlen(data));
-}
-
-ESP8266CommandStatus ESP8266::send(unsigned int id, const uint8_t* buffer, size_t size)
-{
-    int c;
-
-    clear();
-    _serial->print(F("AT+CIPSEND="));
-
-    if (id != ESP8266_SINGLE_CLIENT) {
-        _serial->print(id);
-        _serial->print(F(","));
-    }
-
-    _serial->println(size);
-
-    c = timedPeek(20);
-
-    if (c == -1)
-        return ESP8266_COMMAND_TIMEOUT;
-
-    if (c != '>')
-        return readStatus(_timeout);
-
-    _serial->write(buffer, size);
-
-    return readStatus(_timeout);
-}
-
 ESP8266CommandStatus ESP8266::close(unsigned int id)
 {
     clear();
