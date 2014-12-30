@@ -7,7 +7,7 @@
 class ESP8266Server
 {
 public:
-    ESP8266Server(ESP8266& esp8266, uint16_t port)  :  _esp8266(esp8266),  _port(port)  {} ;
+    ESP8266Server(ESP8266& esp8266, uint16_t port) : _esp8266(esp8266), _port(port) {}
     ESP8266Client * available();
     virtual void begin();
 
