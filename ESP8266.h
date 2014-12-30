@@ -154,11 +154,44 @@ public:
     ESP8266CommandStatus connect(unsigned int id, ESP8266Protocol protocol, IPAddress ip, unsigned int port);
     ESP8266CommandStatus connect(unsigned int id, ESP8266Protocol protocol, const char* host, unsigned int port);
 
-    // Send data
-    ESP8266CommandStatus send(const char* data);
-    ESP8266CommandStatus send(const uint8_t* buffer, size_t size);
-    ESP8266CommandStatus send(unsigned int id, const char* data);
-    ESP8266CommandStatus send(unsigned int id, const uint8_t* buffer, size_t size);
+    // Send data M2M
+    template <class T>
+    ESP8266CommandStatus send(unsigned int id, const T value[], size_t size)
+    {
+        ESP8266CommandStatus ret;
+        for(size_t i = 0; i < size; i++)
+            if((ret = send(id, value)) != ESP8266_COMMAND_OK)
+                return ret;
+        return ret;
+    }
+
+    template <class T>
+    ESP8266CommandStatus send(unsigned int id, const T& value)
+    {
+        int c;
+
+        clear();
+        _serial->print(F("AT+CIPSEND="));
+
+        if (id != ESP8266_SINGLE_CLIENT) {
+            _serial->print(id);
+            _serial->print(F(","));
+        }
+
+        _serial->println(sizeof(value));
+
+        c = timedPeek(20);
+
+        if (c == -1)
+            return ESP8266_COMMAND_TIMEOUT;
+
+        if (c != '>')
+            return readStatus(_timeout);
+
+        _serial->write((byte*)&value, sizeof(value));
+
+        return readStatus(_timeout);
+    }
 
     // Close connection
     ESP8266CommandStatus close(unsigned int id);
