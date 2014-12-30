@@ -156,6 +156,16 @@ public:
 
     // Send data M2M
     template <class T>
+    ESP8266CommandStatus send(const T& value)
+    {
+        return send(ESP8266_SINGLE_CLIENT, value);
+    }
+    template <class T>
+    ESP8266CommandStatus send(const T value[], size_t size)
+    {
+        return send(ESP8266_SINGLE_CLIENT, value, size);
+    }
+    template <class T>
     ESP8266CommandStatus send(unsigned int id, const T value[], size_t size)
     {
         ESP8266CommandStatus ret;
