@@ -154,7 +154,33 @@ public:
     ESP8266CommandStatus connect(unsigned int id, ESP8266Protocol protocol, IPAddress ip, unsigned int port);
     ESP8266CommandStatus connect(unsigned int id, ESP8266Protocol protocol, const char* host, unsigned int port);
 
-    // Send data M2M
+    // Send data char array/string overloads
+    ESP8266CommandStatus send(char *value)
+    {
+        return send(ESP8266_SINGLE_CLIENT, value, strlen(value));
+    }
+    ESP8266CommandStatus send(const char *value)
+    {
+        return send(ESP8266_SINGLE_CLIENT, value, strlen(value));
+    }
+    ESP8266CommandStatus send(unsigned id, char *value)
+    {
+        return send(id, value, strlen(value));
+    }
+    ESP8266CommandStatus send(unsigned int id, const char *value)
+    {
+        return send(id, value, strlen(value));
+    }
+    ESP8266CommandStatus send(String &value)
+    {
+        return send(ESP8266_SINGLE_CLIENT, value.c_str(), value.length());
+    }
+    ESP8266CommandStatus send(unsigned int id, const String &value)
+    {
+        return send(id, value.c_str(), value.length());
+    }
+
+    // Send data generic types
     template <class T>
     ESP8266CommandStatus send(const T& value)
     {
@@ -168,11 +194,29 @@ public:
     template <class T>
     ESP8266CommandStatus send(unsigned int id, const T value[], size_t size)
     {
-        ESP8266CommandStatus ret;
-        for(size_t i = 0; i < size; i++)
-            if((ret = send(id, value)) != ESP8266_COMMAND_OK)
-                return ret;
-        return ret;
+        int c;
+
+        clear();
+        _serial->print(F("AT+CIPSEND="));
+
+        if (id != ESP8266_SINGLE_CLIENT) {
+            _serial->print(id);
+            _serial->print(F(","));
+        }
+
+        _serial->println((sizeof(*value)*size));
+
+        c = timedPeek(20);
+
+        if (c == -1)
+            return ESP8266_COMMAND_TIMEOUT;
+
+        if (c != '>')
+            return readStatus(_timeout);
+
+        _serial->write((byte*)value, (sizeof(*value)*size));
+
+        return readStatus(_timeout);
     }
 
     template <class T>
