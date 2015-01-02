@@ -157,19 +157,19 @@ public:
     // Send data char array/string overloads
     ESP8266CommandStatus send(char *value)
     {
-        return send(ESP8266_SINGLE_CLIENT, value, strlen(value)+1);
+        return send(ESP8266_SINGLE_CLIENT, value, strlen(value));
     }
     ESP8266CommandStatus send(const char *value)
     {
-        return send(ESP8266_SINGLE_CLIENT, value, strlen(value)+1);
+        return send(ESP8266_SINGLE_CLIENT, value, strlen(value));
     }
     ESP8266CommandStatus send(unsigned id, char *value)
     {
-        return send(id, value, strlen(value)+1);
+        return send(id, value, strlen(value));
     }
     ESP8266CommandStatus send(unsigned int id, const char *value)
     {
-        return send(id, value, strlen(value)+1);
+        return send(id, value, strlen(value));
     }
     ESP8266CommandStatus send(String &value)
     {
