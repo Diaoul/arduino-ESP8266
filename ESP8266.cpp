@@ -510,6 +510,10 @@ int ESP8266::available()
 {
     int tmp;
     int c;
+	
+    // check if already receiving
+    if (_available > 0)
+	    return _available;
 
     // incoming sequence is +IPD,id,length:data or +IPD,length:data
     // non-blocking search of '+'
