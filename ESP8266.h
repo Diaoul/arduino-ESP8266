@@ -102,7 +102,7 @@ public:
     ESP8266CommandStatus getMode(ESP8266WifiMode* mode);
 
     // Join the access point
-    ESP8266CommandStatus joinAP(char* ssid, char* password);
+    ESP8266CommandStatus joinAP(const char* ssid, const char* password);
 
     // Get the current access point
     ESP8266CommandStatus getAP(char* ssid);

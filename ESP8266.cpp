@@ -91,7 +91,7 @@ ESP8266CommandStatus ESP8266::getMode(ESP8266WifiMode* mode)
     return readStatus(20);
 }
 
-ESP8266CommandStatus ESP8266::joinAP(char* ssid, char* password)
+ESP8266CommandStatus ESP8266::joinAP(const char* ssid, const char* password)
 {
     clear();
     _serial->print(F("AT+CWJAP=\""));
@@ -511,22 +511,19 @@ int ESP8266::available()
     int tmp;
     int c;
 
-    // check if already receiving
-    if (_available > 0)
-        return _available;
-
     // incoming sequence is +IPD,id,length:data or +IPD,length:data
     // non-blocking search of '+'
     do {
         c = _serial->read();
 
-        if (c == -1)
-            return _available = 0;
+        if (c == -1) {
+            return 0;
+        }
     } while (c != '+');
 
     // find the rest slower
     if (!find(F("IPD,"), 20))
-        return _available = 0;
+        return 0;
 
     // read first int, id or length
     tmp = parseInt(20);
@@ -560,12 +557,12 @@ unsigned int ESP8266::getId()
 
 int ESP8266::read()
 {
-    if (available() > 0) {
-        _available--;
-
-        while (!_serial->available()) {}
-
-        return _serial->read();
+    if (_available) {
+        int c =    _serial->read();
+        if (c >= 0 && _available > 0) {
+            _available--;
+        }
+        return c;
     }
 
     return -1;
@@ -578,9 +575,9 @@ int ESP8266::read(char* buffer, size_t size)
 
 int ESP8266::read(uint8_t* buffer, size_t size)
 {
-    if (available() > 0) {
-        int readable = min(size, _available);
-        size_t count = 0;
+    if (_available > 0) {
+        unsigned int readable = min(size, (size_t)_available);
+        unsigned int count = 0;
 
         while (count < readable) {
             int c = timedRead(_timeout);
@@ -601,10 +598,7 @@ int ESP8266::read(uint8_t* buffer, size_t size)
 
 int ESP8266::peek()
 {
-    if (available() > 0) {
-
-        while (!_serial->available()) {}
-
+    if (_available > 0) {
         return _serial->peek();
     }
 
@@ -637,7 +631,7 @@ bool ESP8266::initialize()
     unsigned long startMillis = millis();
 
     while (millis() - startMillis < 3000) {
-        if (test() == ESP8266_COMMAND_OK && setEcho(false) == ESP8266_COMMAND_OK && setUnvarnishedMode(false) == ESP8266_COMMAND_OK)
+        if (test() == ESP8266_COMMAND_OK && setEcho(false) == ESP8266_COMMAND_OK && setUnvarnishedMode(false) != ESP8266_COMMAND_TIMEOUT)
             return true;
 
         delay(100);
@@ -708,8 +702,6 @@ int ESP8266::timedRead(unsigned int timeout)
 
 void ESP8266::pre_connect(unsigned int id, ESP8266Protocol protocol)
 {
-    int c;
-
     clear();
     _serial->print(F("AT+CIPSTART="));
 
@@ -919,7 +911,7 @@ int ESP8266::findStrings(const char** strings, unsigned int count, bool strict, 
 #endif
 
         // loop over possible strings
-        for (int i = 0; i < count; i++) {
+        for (unsigned int i = 0; i < count; i++) {
             // match magic
             if(c == strings[i][indexes[i]]) {
                 match = true;
