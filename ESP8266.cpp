@@ -558,8 +558,8 @@ unsigned int ESP8266::getId()
 int ESP8266::read()
 {
     if (_available) {
-        int c =    _serial->read();
-        if (c >= 0 && _available > 0) {
+        int c = _serial->read();
+        if (c >= 0) {
             _available--;
         }
         return c;
